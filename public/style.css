@@ -1,0 +1,35 @@
+.loader {
+    width: 50px; /* Adjust width as needed */
+    height: 50px; /* Adjust height as needed */
+    border-radius: 50%; /* Create a circular loader */
+    border: 6px solid #f3f3f3; /* Light grey border */
+    border-top: 4px solid #3498db; /* Blue border on top */
+    animation: spin 2s linear infinite; /* Apply rotation animation */
+    position: absolute; /* Position loader absolutely within its parent */
+    top: 100px; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Center the loader precisely */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); } /* Start rotation at 0 degrees */
+    100% { transform: rotate(360deg); } /* Rotate to 360 degrees */
+}
+.bgs{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url("../public/images/classroom.webp") no-repeat;
+    background-size: cover;
+    background-position: center;
+
+}
+.custom-select-border {
+    border: 1px solid #ced4da; /* Add your desired border color */
+    outline: none; /* Remove the outline border */
+    max-width: 320px;
+}
+.custom-capitalization {
+    text-transform: capitalize;
+}
