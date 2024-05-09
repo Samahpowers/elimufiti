@@ -1,22 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './Components/Home';
 import Login from './Components/Login';
 import Signup from './Components/Signup';
-import DynamicComponent from './Components/DynamicComponent'; // Import DynamicComponent
-import  DownloadPage  from './Components/DownLoadPage';
+
+import DownloadPage from './Components/DownLoadPage';
 import Support from './Components/Support';
 
 function App() {
+    const [isAdmin, setIsAdmin] = useState(true); // Initialize isAdmin state
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
     return (
         <BrowserRouter>
             <Routes>
-                <Route path='/' element={<Home />} />
-                <Route path='/login' element={<Login />} />
-                <Route path='/signup' element={<Signup />} />                
-                <Route path='/:selectedItem' element={<DynamicComponent />} /> {/* Use DynamicComponent */}
-                <Route path='/download' element={<DownloadPage />} /> {/* Use DownloadPage */}
-                <Route path='/support/upload/resources' element={<Support />} /> 
+                <Route path='/' element={<Home 
+                                        isAdmin={isAdmin}
+                                        isLoggedIn={isLoggedIn}/>} />
+                <Route path='/login' element={<Login 
+                                                isAdmin={isAdmin}
+                                                isLoggedIn={isLoggedIn}/>} />
+                <Route path='/signup' element={<Signup 
+                                                isAdmin={isAdmin}
+                                                isLoggedIn={isLoggedIn}/>} />                 
+                <Route path='/download' element={<DownloadPage />} />
+                <Route path='/support/upload/resources' element={<Support 
+                                                                        isAdmin={isAdmin}
+                                                                        isLoggedIn={isLoggedIn}/>} /> 
             </Routes>
         </BrowserRouter>
     );

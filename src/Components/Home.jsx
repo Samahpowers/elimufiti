@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Main from "./main";
 import VerticalnavMenu from "./Vertical_nav._menu";
 
-const Home = () => {
+const Home = ({isAdmin, isLoggedIn}) => {
     return (
         <div>
                 <nav className="container-fluid d-flex p-3 bg-primary" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
@@ -20,7 +20,10 @@ const Home = () => {
                                 <VerticalnavMenu />
                             </div>
                             <div className="col-lg-10 overflow-auto" style={{ maxHeight: '100vh' }}>
-                                <Main />
+                                <Main 
+                                isAdmin={isAdmin}
+                                isLoggedIn = {isLoggedIn}
+                                />
                             </div>
                         </div>
                     </div>

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 import axios from "axios"
 import { validationSignup } from "../middlewares/signupValdidations"
 import { useState } from "react";
-const Signup = ()=>{
+const Signup = ({isAdmin})=>{
    const [values, setValues] = useState({
     name: "",
     email: "",
@@ -16,9 +16,9 @@ const Signup = ()=>{
         setValues(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }*/
     const handleInput = (e) => {
-        const { name, value } = e.target;
-        console.log(name, value); // Log the field name and value
-        setValues(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        const inputValue = type === 'checkbox' ? checked : value; // Handle checkbox input
+        setValues(prev => ({ ...prev, [name]: inputValue }));
     }
     
     
@@ -80,6 +80,16 @@ const Signup = ()=>{
                          name="password" />                           
                          {errors.password && <span className="text-danger">{errors.password}</span>}                        
                     </div>
+                    {isAdmin && <div className="mb-3">
+                                    <label htmlFor="isAdmin" className="form-label"><strong>Are you an admin?</strong></label>
+                                    <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    name="isAdmin"
+                                    onChange={handleInput}
+                                    checked={values.isAdmin}
+                                    />
+                                </div>}
                     <button type="submit" className="btn btn-success w-100">Sign Up </button>
                     <p>You agree on our terms and conditions</p>
                     <Link to ="/login"  className="btn btn-default border w-100">Login</Link>

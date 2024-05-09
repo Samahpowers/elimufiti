@@ -4,13 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { prePrimaryItems, primaryItems,schoolTittles,secondaryItems, jssItems } from "./PrePrimaryItems";
 import DynamicComponent from "./DynamicComponent";
 
-const ResourceLinks = () => {
+const ResourceLinks = ({isAdmin, isLoggedIn}) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
     const [isListHidden, setIsListHidden] = useState(false);
     const [isDynamicComponentHidden, setIsDynamicComponentHidden] = useState(false);
     const [tittle, setTittle] = useState(true)
+    
     const navigate = useNavigate();
 
     const fetchData = async (path, value) => {
@@ -213,6 +214,8 @@ const ResourceLinks = () => {
                     error={error}
                     handleDownloadExam={handleDownloadExam}
                     handleDelete={handleDelete}
+                    isAdmin={isAdmin}
+                    isLoggedIn={isLoggedIn} // Pass the isAdmin state
                 />
             )}
         </div>
