@@ -1,5 +1,5 @@
 import express from "express"
-import upload from "../controllers/middlewares/upload.js"
+import upload from "../middlewares/upload.js"
 import { createSecScheme, deleteSecondarySchemeByID, getSecondarySchemeFileByID, getSecondarySchemes } from "../controllers/secondary.js"
 
 const secRouter = express()

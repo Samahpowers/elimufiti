@@ -1,7 +1,7 @@
 import express from "express"
 
 
-import upload from "../controllers/middlewares/upload.js";
+import upload from "../middlewares/upload.js";
 import { createScheme, deletePrimarySchemeByID, getPrimarySchemeFileByID, getPrimarySchemes } from "../controllers/primary.js";
 
 

@@ -53,7 +53,7 @@ import {
         getJssnotesFileByID,
         getJssHassignmentsFileByID,
         getGrade8Examinations} from "../controllers/jss.js"
-import upload from "../controllers/middlewares/upload.js"
+import upload from "../middlewares/upload.js"
 
 
 const jssRouter = express.Router()
