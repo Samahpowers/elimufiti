@@ -1,5 +1,4 @@
-const userTokens = {};
-
+const userTokens = {}
 export const setUserToken = (userId, token) => {
     userTokens[userId] = token;
 };
@@ -11,7 +10,3 @@ export const getUserToken = (userId) => {
 export const removeUserToken = (userId) => {
     delete userTokens[userId];
 };
-
-export const setSubscribeduserToken = (userId, token) =>{
-    userTokens[userId] = token;
-}

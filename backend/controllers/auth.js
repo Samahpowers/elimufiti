@@ -17,7 +17,7 @@ export const signup = async (req, res) => {
     try {
         console.log("Received signup request:", req.body); // Log received request data
 
-        const { email, password, name, isAdmin, isSubscribed, subscribedAmount, expiresIn } = req.body;
+        const { email, password, name, isAdmin, isSubscribed, amount, expiresIn } = req.body;
         if (!(email && password && name)) {
             return res.status(400).json({ errorMessage: "All fields are required" });
         }
@@ -35,8 +35,8 @@ export const signup = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10); // 10 is the saltRounds
 
         // If user doesn't exist, proceed with signup
-        const insertUserSql = "INSERT INTO signup (email, password, name, isAdmin,isSubscribed, subscribedAmount, expiresIn) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        await pool.query(insertUserSql, [email, hashedPassword, name, isAdmin,isSubscribed, subscribedAmount, expiresIn]);
+        const insertUserSql = "INSERT INTO signup (email, password, name, isAdmin,isSubscribed, amount, expiresIn) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        await pool.query(insertUserSql, [email, hashedPassword, name, isAdmin,isSubscribed, amount, expiresIn]);
 
         // Return success response
         return res.status(201).json({ message: "User created successfully", email, name });
@@ -54,20 +54,74 @@ export const signup = async (req, res) => {
     }
 };
 
+// Update a user
+export const updateUser = async (req, res) => {
+    try {
+        console.log("Received update request:", req.body); // Log received request data
+
+        const userId = req.params.id; // Get user ID from the URL parameter
+        const { email, password, name, isAdmin, isSubscribed, amount, expiresIn } = req.body;
+
+        // Validate required fields
+        if (!userId) {
+            return res.status(400).json({ errorMessage: "User ID is required" });
+        }
+
+        // Check if the user exists
+        const checkUserSql = "SELECT * FROM signup WHERE id = ?";
+        const [checkUserData] = await pool.query(checkUserSql, [userId]);
+
+        // If user with the provided ID does not exist, return an error
+        if (checkUserData.length === 0) {
+            return res.status(404).json({ errorMessage: "User not found" });
+        }
+
+        // Prepare fields to update
+        const updateFields = {};
+        if (email) updateFields.email = email;
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10); // 10 is the saltRounds
+            updateFields.password = hashedPassword;
+        }
+        if (name) updateFields.name = name;
+        if (isAdmin !== undefined) updateFields.isAdmin = isAdmin;
+        if (isSubscribed !== undefined) updateFields.isSubscribed = isSubscribed;
+        if (amount !== undefined) updateFields.amount = amount;
+        if (expiresIn) updateFields.expiresIn = expiresIn;
+
+        // Build the SQL update query dynamically based on provided fields
+        const setClause = Object.keys(updateFields).map(field => `${field} = ?`).join(', ');
+        const values = Object.values(updateFields);
+        const updateUserSql = `UPDATE signup SET ${setClause} WHERE id = ?`;
+        values.push(userId);
+
+        // Execute the update query
+        await pool.query(updateUserSql, values);
+
+        // Return success response
+        return res.status(200).json({ message: "User updated successfully" });
+    } catch (error) {
+        // Catch the actual error
+        console.error("Internal Server Error:", error);
+
+        // Return a generic error message for other types of errors
+        return res.status(500).json({ errorMessage: "Internal Server Error" });
+    }
+};
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Fetch user by email
         const getUserSql = "SELECT * FROM signup WHERE email = ?";
         const [userData] = await pool.query(getUserSql, [email]);
 
-        // Check if user exists
         if (userData.length === 0) {
             return res.status(404).json({ errorMessage: "User not found" });
         }
 
-        // Compare password asynchronously
+        const userId = userData[0].id;
+        const isSubscribed = userData[0].isSubscribed;
+
         const hashedPassword = userData[0].password;
         const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
@@ -75,20 +129,18 @@ export const login = async (req, res) => {
             return res.status(401).json({ errorMessage: "Invalid password" });
         }
 
-        // Password is correct, generate JWT token
-        const userId = userData[0].id;
-        const token = jwt.sign({ userId }, secretKey, { expiresIn: "1h" });
+        const token = jwt.sign({ userId, isSubscribed }, secretKey, { expiresIn: "1h" });
 
-        // Store the token asynchronously
-        await setUserToken(userId, token);
+        await setUserToken(token);
 
-        // Return success response with JWT token
-        return res.status(200).json({ message: "Login successful", token });
+        return res.status(200).json({ message: "Login successful", token, userId });
     } catch (error) {
         console.error("Internal Server Error:", error);
         return res.status(500).json({ errorMessage: "Internal Server Error" });
     }
 };
+
+
 
 export const logout = async (req, res) => {
     try {
@@ -107,26 +159,33 @@ export const logout = async (req, res) => {
 };
 
 
-export const someProtectedEndpoint = async (req, res) => {
+
+export const protectedEndpoint = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ errorMessage: 'Access denied. No token provided.' });
+    }
+    
+    const token = authHeader.split(' ')[1]; // Get the token from the header
+    if (!token) {
+        return res.status(401).json({ errorMessage: 'Access denied. No token provided.' });
+    }
+    
     try {
-        const userId = req.user.id; // Assuming you have middleware that extracts the user ID from the request
-
-        // Check if the user has a valid token
-        const userToken = getUserToken(userId);
-
-        if (!userToken) {
-            return res.status(401).json({ errorMessage: "Unauthorized. Please log in." });
+        const decoded = jwt.verify(token, secretKey);
+        req.user = decoded;
+        req.isSubscribed = decoded.isSubscribed;  // Attach isSubscribed to the request
+        
+        if (!req.isSubscribed) {
+            return res.status(403).json({ errorMessage: 'Access denied. User is not subscribed.' });
         }
-
-        // Proceed with accessing the protected resource
-        // Your logic here...
-
-        return res.status(200).json({ message: "Access granted" });
-    } catch (error) {
-        console.error("Internal Server Error:", error);
-        return res.status(500).json({ errorMessage: "Internal Server Error" });
+        
+        next(); // Proceed to the next middleware or route handler
+    } catch (ex) {
+        res.status(400).json({ errorMessage: 'Invalid token.' });
     }
 };
+
 
 export const getUsers = async (req, res) => {
     try {
@@ -147,52 +206,19 @@ export const getUsers = async (req, res) => {
         return res.status(500).json({ errorMessage: "Internal Server Error" });
     }
 };
-
-//MPESA STK PUSH
-
-export const stkPush = async (req, res) => {
-  try {
-    const phone = req.body.phone.substring(1); // Remove the leading 0
-    const amount = req.body.amount;
-    const Shortcode = "174379";
-    const Passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
-    
-    const date = new Date(); // Create a new Date object representing the current date and time
-    const timestamp = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}${date.getSeconds().toString().padStart(2, '0')}`;
-    console.log(timestamp); // Output the generated timestamp
-
-    const password = Buffer.from(`${Shortcode}${Passkey}${timestamp}`).toString("base64");
-
-    const token = req.token; // Retrieve the token from the req object
-
-    const response = await axios.post(
-      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
-      {    
-        "BusinessShortCode": Shortcode,    
-        "Password": password,    
-        "Timestamp": timestamp,    
-        "TransactionType": "CustomerPayBillOnline",    
-        "Amount": amount,    
-        "PartyA": `254${phone}`,    
-        "PartyB": Shortcode,    
-        "PhoneNumber": `254${phone}`,    
-        "CallBackURL": "https://mydomain.com/pat",    
-        "AccountReference": `254${phone}`, // Account number or phone number    
-        "TransactionDesc": "Test"
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}` // Ensure there is a space after Bearer
+export const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params; // Get the ID from the request parameters
+        const sql = "SELECT * FROM signup WHERE id = ?";
+        const [results] = await pool.query(sql, [id]); // Pass the ID as a parameter to the query
+        
+        if (results.length === 0) {
+            return res.status(404).json({ error: "No User with this ID exists." });
         }
-      }
-    );
-
-    console.log(response.data);
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message, details: error.response ? error.response.data : {} });
-  }
+        
+        return res.status(200).json(results);
+    } catch (error) {
+        console.error("Error fetching the user in the database:", error);
+        return res.status(500).json({ errorMessage: "Internal Server Error" });
+    }
 };
-
-export default stkPush;

@@ -6,6 +6,7 @@ import { createScheme,
     updatePriPrimarySchemeByID,
     getPriPrimarySchemeFileByID
 } from "../controllers/pre_primary.js"
+import { protectedEndpoint } from "../controllers/auth.js"
 
 
 
@@ -16,7 +17,7 @@ prePriRouter.post("/create/schemes", upload.single("file"), createScheme)
 //GET ALL
 prePriRouter.get("/schemes", getPriPrimarySchemes)
 //GET FILE BY ID
-prePriRouter.get("/schemes/file/:id", getPriPrimarySchemeFileByID)
+prePriRouter.get("/schemes/file/:id", protectedEndpoint, getPriPrimarySchemeFileByID)
 //UPDATE BY ID
 prePriRouter.put("/update/schemes/:id",updatePriPrimarySchemeByID)
 

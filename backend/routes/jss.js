@@ -54,6 +54,7 @@ import {
         getJssHassignmentsFileByID,
         getGrade8Examinations} from "../controllers/jss.js"
 import upload from "../middlewares/upload.js"
+import { protectedEndpoint } from "../controllers/auth.js"
 
 
 const jssRouter = express.Router()
@@ -76,14 +77,14 @@ jssRouter.get   ("/fullset/exams", getJssfullSetExaminations)
 jssRouter.get   ("/notes", getJssnotes)
 jssRouter.get   ("/holiday/assignments", getJssHassignments)
 
-jssRouter.get   ("/schemes/file/:id",getJssSchemeFileByID)
-jssRouter.get   ("/assessment/tools/file/:id", getJuniorAssesmentToolFileByID)
-jssRouter.get   ("/curriculum/designs/file/:id",getJssCurriculumdesignFileByID)
-jssRouter.get   ("/grade7/exams/file/:id", getGrade7ExaminationFileByID)
-jssRouter.get   ("/grade8/exams/file/:id",getGrade8ExaminationFileByID)
-jssRouter.get   ("/fullset/exams/file/:id", getJssfullSetExaminationFileByID)
-jssRouter.get   ("/notes/file/:id", getJssnotesFileByID)
-jssRouter.get   ("/holiday/assignments/file/:id", getJssHassignmentsFileByID)
+jssRouter.get   ("/schemes/file/:id",protectedEndpoint, getJssSchemeFileByID)
+jssRouter.get   ("/assessment/tools/file/:id",protectedEndpoint, getJuniorAssesmentToolFileByID)
+jssRouter.get   ("/curriculum/designs/file/:id", protectedEndpoint, getJssCurriculumdesignFileByID)
+jssRouter.get   ("/grade7/exams/file/:id", protectedEndpoint, getGrade7ExaminationFileByID)
+jssRouter.get   ("/grade8/exams/file/:id", protectedEndpoint, getGrade8ExaminationFileByID)
+jssRouter.get   ("/fullset/exams/file/:id", protectedEndpoint,  getJssfullSetExaminationFileByID)
+jssRouter.get   ("/notes/file/:id", protectedEndpoint,  getJssnotesFileByID)
+jssRouter.get   ("/holiday/assignments/file/:id", protectedEndpoint, getJssHassignmentsFileByID)
 
 jssRouter.delete("/delete/schemes", deleteAllJssSchemes)
 jssRouter.delete ("/delete/assessment/tools", deleteAllJuniorAssesmentTools)

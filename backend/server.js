@@ -1,11 +1,14 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 import { authRouter } from "./routes/auth.js";
 import { prePriRouter } from "./routes/pre_primary.js";
 import { priRouter } from "./routes/primary.js";
 import { jssRouter } from "./routes/jss.js";
 import { secRouter } from "./routes/secondary.js";
+import { mpesaRouter } from "./routes/mpesaRoute.js";
+import { userDataRoute } from "./routes/userDataRoute.js";
 
 const PORT = 8000;
 const app = express();
@@ -26,6 +29,8 @@ app.use("/pre/primary", prePriRouter);
 app.use("/primary", priRouter);
 app.use("/jss", jssRouter);
 app.use("/secondary", secRouter);
+app.use("/api/mpesa", mpesaRouter); // Use the mpesa router for callback
+app.use("/user/data", userDataRoute)
 
 // Start the server
 app.listen(PORT, () => {
