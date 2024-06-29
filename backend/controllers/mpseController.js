@@ -1,41 +1,44 @@
-import pool from "../db.js";
+import { pool } from "../db.js";
 import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 let subscribedUserId = ""; // Initialize subscribedUserId
 
 export const stkPush = async (req, res) => {
+    const shortCode = process.env.SHORT_CODE;
+    const passkey = process.env.PASSKEY;
+    const callbackUrl = process.env.CALLBACK_URL;
+    const token = req.token;
+
     try {
         if (req.body.userId) {
             subscribedUserId = req.body.userId; // Update subscribedUserId with the value from req.body.userId
         }
 
-      
         const phone = req.body.phone.substring(1); // Remove the leading 0
         const amount = req.body.amount;
-        const Shortcode = "174379";
-        const Passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
 
         const date = new Date();
         const timestamp = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}${date.getSeconds().toString().padStart(2, '0')}`;
 
-        const password = Buffer.from(`${Shortcode}${Passkey}${timestamp}`).toString("base64");
-
-        const token = req.token;
+        const password = Buffer.from(`${shortCode}${passkey}${timestamp}`).toString("base64");
 
         const response = await axios.post(
             "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
             {
-                "BusinessShortCode": Shortcode,
-                "Password": password,
-                "Timestamp": timestamp,
-                "TransactionType": "CustomerPayBillOnline",
-                "Amount": amount,
-                "PartyA": `254${phone}`,
-                "PartyB": Shortcode,
-                "PhoneNumber": `254${phone}`,
-                "CallBackURL": "https://ca0e-154-159-237-216.ngrok-free.app/api/mpesa/callback",
-                "AccountReference": `254${phone}`,
-                "TransactionDesc": "Test"
+                BusinessShortCode: shortCode, 
+                Password: password,
+                Timestamp: timestamp,
+                TransactionType: "CustomerBuyGoodsOnline",
+                Amount: amount,
+                PartyA: `254${phone}`,
+                PartyB: shortCode,
+                PhoneNumber: `254${phone}`,
+                CallBackURL: callbackUrl,
+                AccountReference: `254${phone}`,
+                TransactionDesc: "Test"
             },
             {
                 headers: {
@@ -46,7 +49,7 @@ export const stkPush = async (req, res) => {
 
         res.status(200).json(response.data);
     } catch (error) {
-        console.error(error);
+        console.error('Error in STK Push request:', error);
         res.status(500).json({ error: error.message, details: error.response ? error.response.data : {} });
     }
 };
@@ -85,12 +88,11 @@ export const callBack = async (req, res) => {
             const transactionDate = CallbackMetadata.Item.find(item => item.Name === 'TransactionDate')?.Value;
             const phoneNumber = CallbackMetadata.Item.find(item => item.Name === 'PhoneNumber')?.Value;
 
-          
             const userId = subscribedUserId;
 
             if (amount) {
                 try {
-                    await updateUser(userId, { amount, isSubscribed: true });//later to include other fields like phoneNumber and mpesaReceiptNumber
+                    await updateUser(userId, { amount, isSubscribed: true }); // You may also include phoneNumber and mpesaReceiptNumber
                 } catch (error) {
                     console.error('Error updating user in database:', error);
                     return res.status(500).json({ error: "Database update error" });
@@ -101,7 +103,6 @@ export const callBack = async (req, res) => {
         }
 
         return res.status(200).json({ message: "Callback received successfully" });
-
     } catch (error) {
         console.error('Error handling MPESA callback:', error);
         return res.status(500).json({ error: "Internal server error" });

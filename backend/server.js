@@ -9,8 +9,11 @@ import { jssRouter } from "./routes/jss.js";
 import { secRouter } from "./routes/secondary.js";
 import { mpesaRouter } from "./routes/mpesaRoute.js";
 import { userDataRoute } from "./routes/userDataRoute.js";
+import dotenv from "dotenv"
+// Load environment variables from .env file
+dotenv.config();
 
-const PORT = 8000;
+const PORT = process.env.PORT ||8001;
 const app = express();
 
 // Middleware
@@ -24,7 +27,7 @@ app.use(cors({
 }));
 
 // Routes
-app.use("/api", authRouter);
+app.use("/api", authRouter); // check and change
 app.use("/pre/primary", prePriRouter);
 app.use("/primary", priRouter);
 app.use("/jss", jssRouter);

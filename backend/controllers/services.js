@@ -1,4 +1,4 @@
-import pool from "../db.js";
+import {pool} from "../db.js";
 
 /**
  * Retrieves primary scheme data from the database based on the specified ID.
@@ -30,17 +30,3 @@ export const getPriSchemes = async (id) => {
         throw error;
     }
 };
-/*
-export const getContentType = (fileName) => {
-    const extension = fileName.split('.').pop().toLowerCase();
-    switch (extension) {
-        case 'pdf':
-            return 'application/pdf';
-        case 'docx':
-            return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        // Add more cases for other file types if needed
-        default:
-            return 'application/octet-stream'; // Default to octet-stream if file type is unknown
-    }
-};
-*/

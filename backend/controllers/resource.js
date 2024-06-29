@@ -1,4 +1,4 @@
-import pool from "../db.js";
+import {pool} from "../db.js";
 import { handleValidationError, handleDatabaseError } from "./errorHandlers.js";
 import { validationResult } from "express-validator";
 
@@ -22,11 +22,11 @@ export const createResource = async (req, res, tableName) => {
         const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
 
         // Extract other data from request body
-        const { grade, term, subject, year, examMS } = req.body;
+        const { form, term, subject, year, examMS, set, grade } = req.body;
 
         // Insert data into the database
-        const sql = `INSERT INTO ${tableName} (grade, term, subject, file, year,fileName, fileExtension, examMS) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-        await pool.query(sql, [grade, term, subject, file, year,fileName, fileExtension, examMS]);
+        const sql = `INSERT INTO ${tableName} (form, term, subject, file, year,fileName, fileExtension, examMS, \`set\`, grade) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?, ?)`;
+        await pool.query(sql, [form, term, subject, file, year,fileName, fileExtension, examMS, set, grade]);
 
         // Log success message
         console.log('File data successfully saved to the database.');
@@ -39,11 +39,25 @@ export const createResource = async (req, res, tableName) => {
         return handleDatabaseError(res, error);
     }
 };
+//create resource handler
+export const createResourceHandler = async (req, res) => {
+    try {
+       const schema = req.body.schema; // e.g., "preprimary"
+       const table = req.body.table; // e.g., "schemes"
+    
+       // Use the schema dynamically in the createResource function
+       return createResource(req, res, `${schema}.${table}`);
+    } catch (error) {
+       console.error(`Error creating ${table}:`, error);
+       return res.status(500).send({ error: "Internal server error" });
+    }
+    }
+
 // GET ALL
 export const getResources = async (req, res, tableName) => {
     try {
         // Fetch all data from the specified table in the database 912823
-        const sql = `SELECT id, grade, term, subject, examMS, year, fileExtension, fileName FROM ${tableName}`;
+        const sql = `SELECT id, form, term, subject, examMS, year, fileExtension, fileName, \`set\`, grade FROM ${tableName}`;
         const result = await pool.query(sql);
 
         // Check if any data was fetched
@@ -59,6 +73,45 @@ export const getResources = async (req, res, tableName) => {
         return handleDatabaseError(res, error);
     }
 };
+//GET BY YEAR
+export const getResourcesByYear = async (req, res, tableName) => {
+    const year = req.params.year; // Define year here so it's in scope for both try and catch blocks
+
+    try {
+        const sql = `SELECT id, form, term, subject, examMS, year, fileExtension, fileName, \`set\`, grade FROM ${tableName} WHERE year = ?`;
+        const results = await pool.query(sql, [year]);
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: `No resources found for year ${year} in ${tableName}.` });
+        }
+
+        return res.status(200).json(results[0]);
+    } catch (error) {
+        console.error(`Error fetching resources from ${tableName} for year ${year} in database:`, error);
+        return handleDatabaseError(res, error);
+    }
+};
+
+// GET BY FORM
+export const getResourcesByForm = async (req, res, tableName) => {
+    const form = req.params.form;
+
+    try {
+        const sql = `SELECT id, form, term, subject, examMS, year, fileExtension, fileName, \`set\`, grade FROM ${tableName} WHERE form = ?`;
+        const [results] = await pool.query(sql, [form]);
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: `No resources found for form ${form} in ${tableName}.` });
+        }
+
+        return res.status(200).json(results[0]);
+    } catch (error) {
+        console.error(`Error fetching resources from ${tableName} for form ${form} in database:`, error);
+        return handleDatabaseError(res, error);
+    }
+};
+
+
 //GET BY ID
 export const getFilebyID = async (req, res, tableName) => {
     try {
@@ -169,7 +222,7 @@ export const deleteResource = async (req, res, tableName) => {
 };
 
 // UPDATE BY ID
-export const updateResource = async (req, res, tableName) => {
+export const updateResourceById = async (req, res, tableName) => {
     const resourceId = req.params.id; // Assuming the ID of the resource to be updated is passed in the request parameters
     const updatedData = req.body; // Assuming updated data is sent in the request body
     console.log(updatedData)

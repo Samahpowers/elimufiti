@@ -1,8 +1,7 @@
-import pool from "../db.js";
+import {pool} from "../db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import axios from "axios"
 import { setUserToken, removeUserToken, getUserToken } from "./userTokenManager.js";
 
 // Define the generateSecretKey function
@@ -17,7 +16,7 @@ export const signup = async (req, res) => {
     try {
         console.log("Received signup request:", req.body); // Log received request data
 
-        const { email, password, name, isAdmin, isSubscribed, amount, expiresIn } = req.body;
+        const { email, password, name, isAdmin, isSubscribed, amount, expiresIn, phone } = req.body;
         if (!(email && password && name)) {
             return res.status(400).json({ errorMessage: "All fields are required" });
         }
@@ -35,8 +34,8 @@ export const signup = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10); // 10 is the saltRounds
 
         // If user doesn't exist, proceed with signup
-        const insertUserSql = "INSERT INTO signup (email, password, name, isAdmin,isSubscribed, amount, expiresIn) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        await pool.query(insertUserSql, [email, hashedPassword, name, isAdmin,isSubscribed, amount, expiresIn]);
+        const insertUserSql = "INSERT INTO signup (email, password, name, isAdmin,isSubscribed, amount, expiresIn, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        await pool.query(insertUserSql, [email, hashedPassword, name, isAdmin,isSubscribed, amount, expiresIn, phone]);
 
         // Return success response
         return res.status(201).json({ message: "User created successfully", email, name });
@@ -60,7 +59,7 @@ export const updateUser = async (req, res) => {
         console.log("Received update request:", req.body); // Log received request data
 
         const userId = req.params.id; // Get user ID from the URL parameter
-        const { email, password, name, isAdmin, isSubscribed, amount, expiresIn } = req.body;
+        const { email, password, name, isAdmin, isSubscribed, amount, expiresIn, phone } = req.body;
 
         // Validate required fields
         if (!userId) {
@@ -88,6 +87,7 @@ export const updateUser = async (req, res) => {
         if (isSubscribed !== undefined) updateFields.isSubscribed = isSubscribed;
         if (amount !== undefined) updateFields.amount = amount;
         if (expiresIn) updateFields.expiresIn = expiresIn;
+        if (phone) updateFields.phone = phone;
 
         // Build the SQL update query dynamically based on provided fields
         const setClause = Object.keys(updateFields).map(field => `${field} = ?`).join(', ');
@@ -108,6 +108,7 @@ export const updateUser = async (req, res) => {
         return res.status(500).json({ errorMessage: "Internal Server Error" });
     }
 };
+
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -119,20 +120,20 @@ export const login = async (req, res) => {
             return res.status(404).json({ errorMessage: "User not found" });
         }
 
-        const userId = userData[0].id;
-        const isSubscribed = userData[0].isSubscribed;
+        const userId = userData[0].id; //check
+        const isSubscribed = userData[0].isSubscribed;//check
 
-        const hashedPassword = userData[0].password;
+        const hashedPassword = userData[0].password;//check
         const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
         if (!passwordMatch) {
             return res.status(401).json({ errorMessage: "Invalid password" });
         }
 
-        const token = jwt.sign({ userId, isSubscribed }, secretKey, { expiresIn: "1h" });
+        const token = jwt.sign({ userId, isSubscribed }, secretKey, { expiresIn: "1d" });
 
         await setUserToken(token);
-
+        console.log("Generated Token:", token);
         return res.status(200).json({ message: "Login successful", token, userId });
     } catch (error) {
         console.error("Internal Server Error:", error);
@@ -190,7 +191,7 @@ export const protectedEndpoint = (req, res, next) => {
 export const getUsers = async (req, res) => {
     try {
         // Fetch all data from the signup table
-        const sql = "SELECT id, email, name FROM signup";
+        const sql = "SELECT id, email, name, isAdmin, isSubscribed, amount, expiresIn, phone FROM signup";
         const [result] = await pool.query(sql);
 
         // Check if any data was fetched

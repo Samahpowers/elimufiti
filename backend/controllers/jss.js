@@ -1,117 +1,119 @@
-import { createResource, deleteAllResources, deleteResource, updateResource, getResources, getFilebyID } from "./resource.js";
-// CREATION OF RESOURCES
-export const createJssScheme = async (req, res) => {
-    return createResource(req, res, 'jssschemes');
-};
-export const createJssCurriculumdesign = async (req, res) => {
-    return createResource(req, res, 'jsscuricculumdesigns');
-};
+import { deleteAllResources, deleteResource, updateResourceById, getResources,getResourcesByYear, getFilebyID } from "./resource.js";
+// CREATION OF JSS RESOURCES
 
-export const createJuniorAssesmentTools = async (req, res) => {
-    return createResource(req, res, 'jssjuniorassesmenttools');
-};
-
-export const createGrade7Examinations = async (req, res) => {
-    return createResource(req, res, 'grade7examinations');
-};
-
-export const createGrade8Examinations = async (req, res) => {
-    return createResource(req, res, 'grade8examinations');
-};
-export const createJssfullSetExaminations = async (req, res) => {
-    return createResource(req, res, 'jssfullSetexaminations');
-};
-export const createJssnotes = async (req, res) => {
-    return createResource(req, res, 'jssnotes');
-};
-export const createJssHassignments = async (req, res) => {
-    return createResource(req, res, 'jsshoididayassignments');
-};
-
-//RETRIEVE ALL
+//RETRIEVE ALL (JSS)
 export const getJssSchemes = async (req, res) => {
-    return getResources(req, res, 'jssschemes');
+    return getResources(req, res, 'jss.schemes');
+};
+export const getJSSRevisionNotes = async (req, res) => {
+    return getResources(req, res, 'jss.revision_notes');
 };
 export const getJssCurriculumdesign = async (req, res) => {
-    return getResources(req, res, 'jsscuricculumdesigns');
+    return getResources(req, res, 'jss.curriculum_designs');
 };
 
-export const getJuniorAssesmentTools = async (req, res) => {
-    return getResources(req, res, 'jsscurriculumdesigns');
+export const getJssAssessmentTools = async (req, res) => {
+    return getResources(req, res, 'jss.assessment_tools');
 };
 
 export const getGrade7Examinations = async (req, res) => {
-    return getResources(req, res, 'grade7examinations');
+    return getResources(req, res, 'jss.grade7_examinations');
 };
 
 export const getGrade8Examinations = async (req, res) => {
-    return getResources(req, res, 'grade8examinations');
+    return getResources(req, res, 'jss.grade8_examinations');
 };
 export const getJssfullSetExaminations = async (req, res) => {
-    return getResources(req, res, 'jssfullSetexaminations');
+    return getResources(req, res, 'jss.fullset_examinations');
 };
-export const getJssnotes = async (req, res) => {
-    return getResources(req, res, 'jssnotes');
+
+export const getJssHolidayAssignments = async (req, res) => {
+    return getResources(req, res, 'jss.holiday_assignments');
 };
-export const getJssHassignments = async (req, res) => {
-    return getResources(req, res, 'jsshoididayassignments');
+
+//GET BY YEAR
+export const getJssAssessmentToolsByYear = async (req, res) => {
+    return getResourcesByYear(req, res, 'jss.assessment_tools');
+}
+export const getJssHolidayAssignmentsByYear = async (req, res) => {
+    return getResourcesByYear(req, res, 'jss.holiday_assignments');
+}
+export const getGrade7ExaminationsByYear = async (req, res) => {
+    return getResources(req, res, 'jss.grade7_examinations');
 };
-// DELETION OF ALL RESOURCES
-export const deleteAllJssSchemes = async (req, res) => {
-    return deleteAllResources(req, res, 'jssschemes');
+export const getGrade8ExaminationsByYear = async (req, res) => {
+    return getResources(req, res, 'jss.grade8_examinations');
+};
+export const getJSSRevisionNotesByYear = async (req, res) => {
+    return getResources(req, res, 'jss.revision_notes');
+};
+export const getJssfullSetExaminationsByYear = async (req, res) => {
+    return getResources(req, res, 'jss.fullset_examinations');
+};
+export const getJssCurriculumdesignByYear = async (req, res) => {
+    return getResources(req, res, 'jss.curriculum_designs');
+};
+
+// DELETION OF ALL RESOURCES (JSS)
+export const deleteJssSchemes = async (req, res) => {
+    return deleteAllResources(req, res, 'jss.schemes');
+};
+export const deleteJSSRevisionNotes = async (req, res) => {
+    return deleteAllResources(req, res, 'jss.revision_notes');
 };
 
 export const deleteAllJssCurriculumdesigns = async (req, res) => {
-    return deleteAllResources(req, res, 'jsscuricculumdesigns');
+    return deleteAllResources(req, res, 'jss.curriculum_designs');
 };
 
-export const deleteAllJuniorAssesmentTools = async (req, res) => {
-    return deleteAllResources(req, res, 'jsscurriculumdesigns');
+export const deleteJssAssesmentTools = async (req, res) => {
+    return deleteAllResources(req, res, 'jss.assessment_tools');
 };
 
-export const deleteAllGrade7Examinations = async (req, res) => {
-    return deleteAllResources(req, res, 'grade7examinations');
+export const deleteGrade7Examinations = async (req, res) => {
+    return deleteAllResources(req, res, 'jss.grade7_examinations');
 };
 
-export const deleteAllGrade8Examinations = async (req, res) => {
-    return deleteAllResources(req, res, 'grade8examinations');
+export const deleteGrade8Examinations = async (req, res) => {
+    return deleteAllResources(req, res, 'jss.grade8_examinations');
 };
 
 export const deleteAllJssfullSetExaminations = async (req, res) => {
-    return deleteAllResources(req, res, 'jssfullSetexaminations');
+    return deleteAllResources(req, res, 'jss.fullset_examinations');
 };
 
-export const deleteAllJssnotes = async (req, res) => {
-    return deleteAllResources(req, res, 'jssnotes');
-};
+
 
 export const deleteAllJssHassignments = async (req, res) => {
-    return deleteResource(req, res, 'jsshoididayassignments');
+    return deleteResource(req, res, 'jss.holiday_assignments');
 };
 
-//DELETE BY ID
+//DELETE BY ID (JSS)
+export const deleteJSSRevisionNotesByID = async (req, res) => {
+    return deleteResource(req, res, 'jss.revision_notes');
+};
 export const deleteJssSchemeByID = async (req, res) => {
-    return deleteResource(req, res, 'jssschemes');
+    return deleteResource(req, res, 'jss.schemes');
 };
 
 export const deleteJssCurriculumdesignByID = async (req, res) => {
-    return deleteResource(req, res, 'jsscuricculumdesigns');
+    return deleteResource(req, res, 'jss.curriculum_designs');
 };
 
-export const deleteJuniorAssesmentToolByID = async (req, res) => {
-    return deleteResource(req, res, 'jsscurriculumdesigns');
+export const deleteJssAssesmentToolsByID = async (req, res) => {
+    return deleteResource(req, res, 'jss.assessment_tools');
 };
 
 export const deleteGrade7ExaminationByID = async (req, res) => {
-    return deleteResource(req, res, 'grade7examinations');
+    return deleteResource(req, res, 'jss.grade7_examinations');
 };
 
 export const deleteGrade8ExaminationByID = async (req, res) => {
-    return deleteResource(req, res, 'grade8examinations');
+    return deleteResource(req, res, 'jss.grade8_examinations');
 };
 
 export const deleteJssfullSetExaminationByID = async (req, res) => {
-    return deleteResource(req, res, 'jssfullSetexaminations');
+    return deleteResource(req, res, 'jss.fullset_examinations');
 };
 
 export const deleteJssnotesByID = async (req, res) => {
@@ -119,71 +121,71 @@ export const deleteJssnotesByID = async (req, res) => {
 };
 
 export const deleteJssHassignmentsByID = async (req, res) => {
-    return deleteResource(req, res, 'jsshoididayassignments');
+    return deleteResource(req, res, 'jss.holiday_assignments');
 };
 
-// UPDATE BY ID
+// UPDATE BY ID (JSS)
 export const updateJssSchemeByID = async (req, res) => {
-    return updateResource(req, res, 'jssschemes');
+    return updateResourceById(req, res, 'jss.schemes');
 };
 
 export const updateJssCurriculumdesignByID = async (req, res) => {
-    return updateResource(req, res, 'jsscuricculumdesigns');
+    return ByID(req, res, 'jss.curriculum_designs');
 };
 
-export const updateJuniorAssesmentToolByID = async (req, res) => {
-    return updateResource(req, res, 'jsscurriculumdesigns');
+export const updateJssAssesmentToolsByID = async (req, res) => {
+    return updateResourceById(req, res, 'jss.assessment_tools');
 };
 
 export const updateGrade7ExaminationByID = async (req, res) => {
-    return updateResource(req, res, 'grade7examinations');
+    return updateResourceById(req, res, 'jss.grade7_examinations');
 };
 
 export const updateGrade8ExaminationByID = async (req, res) => {
-    return updateResource(req, res, 'grade8examinations');
+    return updateResourceById(req, res, 'jss.grade8_examinations');
 };
 
 export const updateJssfullSetExaminationByID = async (req, res) => {
-    return updateResource(req, res, 'jssfullSetexaminations');
+    return updateResourceById(req, res, 'jss.fullset_examinations');
 };
 
 export const updateJssnotesByID = async (req, res) => {
-    return updateResource(req, res, 'jssnotes');
+    return updateResourceById(req, res, 'jss.revision_notes');
 };
 
 export const updateJssHassignmentsByID = async (req, res) => {
-    return updateResource(req, res, 'jsshoididayassignments');
+    return updateResourceById(req, res, 'jss.holiday_assignments');
 };
 
-//GET FILE BY ID
+//GET FILE BY ID (JSS) && DOWNLOADING FILE
 export const getJssSchemeFileByID = async (req, res) => {
-    return getFilebyID(req, res, 'jssschemes');
+    return getFilebyID(req, res, 'jss.schemes');
 };
 
 export const getJssCurriculumdesignFileByID = async (req, res) => {
-    return getFilebyID(req, res, 'jsscuricculumdesigns');
+    return getFilebyID(req, res, 'jss.curriculum_designs');
 };
 
-export const getJuniorAssesmentToolFileByID = async (req, res) => {
-    return getFilebyID(req, res, 'jsscurriculumdesigns');
+export const getJssAssesmentToolsFileByID = async (req, res) => {
+    return getFilebyID(req, res, 'jss.assessment_tools');
 };
 
 export const getGrade7ExaminationFileByID = async (req, res) => {
-    return getFilebyID(req, res, 'grade7examinations');
+    return getFilebyID(req, res, 'jss.grade7_examinations');
 };
 
 export const getGrade8ExaminationFileByID = async (req, res) => {
-    return getFilebyID(req, res, 'grade8examinations');
+    return getFilebyID(req, res, 'jss.grade8_examinations');
 };
 
 export const getJssfullSetExaminationFileByID = async (req, res) => {
-    return getFilebyID(req, res, 'jssfullSetexaminations');
+    return getFilebyID(req, res, 'jss.fullset_examinations');
 };
 
-export const getJssnotesFileByID = async (req, res) => {
-    return getFilebyID(req, res, 'jssnotes');
+export const getJssRevisionNotesFileByID = async (req, res) => {
+    return getFilebyID(req, res, 'jss.revision_notes');
 };
 
 export const getJssHassignmentsFileByID = async (req, res) => {
-    return getFilebyID(req, res, 'jsshoididayassignments');
+    return getFilebyID(req, res, 'jss.holiday_assignments');
 };

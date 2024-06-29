@@ -1,23 +1,15 @@
 import express from "express"
 import {  
         //CREATE
-        createGrade7Examinations, 
-        createGrade8Examinations, 
-        createJssCurriculumdesign, 
-        createJssfullSetExaminations, 
-        createJssHassignments, 
-        createJssnotes, 
-        createJssScheme, 
-        createJuniorAssesmentTools, 
+        
         //DELETE
-        deleteAllGrade7Examinations, 
-        deleteAllGrade8Examinations, 
+        deleteGrade7Examinations, 
+        deleteGrade8Examinations, 
         deleteAllJssCurriculumdesigns, 
         deleteAllJssfullSetExaminations, 
-        deleteAllJssHassignments, 
-        deleteAllJssnotes, 
-        deleteAllJssSchemes, 
-        deleteAllJuniorAssesmentTools, 
+        deleteAllJssHassignments,        
+        deleteJssSchemes, 
+        deleteJssAssesmentTools, 
         deleteGrade7ExaminationByID, 
         deleteGrade8ExaminationByID, 
         deleteJssCurriculumdesignByID, 
@@ -25,15 +17,13 @@ import {
         deleteJssHassignmentsByID, 
         deleteJssnotesByID, 
         deleteJssSchemeByID,
-        deleteJuniorAssesmentToolByID,
+        deleteJssAssesmentToolsByID,
         //GET ALL
         getGrade7Examinations,
         getJssCurriculumdesign,
-        getJssfullSetExaminations,
-        getJssHassignments,
-        getJssnotes,
+        getJssfullSetExaminations,        
         getJssSchemes,
-        getJuniorAssesmentTools,
+        
         // UPDATE BY ID
         updateGrade7ExaminationByID,
         updateGrade8ExaminationByID,
@@ -42,75 +32,101 @@ import {
         updateJssHassignmentsByID,
         updateJssnotesByID,
         updateJssSchemeByID,
-        updateJuniorAssesmentToolByID,
+        updateJssAssesmentToolsByID,
         //GET BY ID
         getJssSchemeFileByID,
-        getJuniorAssesmentToolFileByID,
+        getJssAssesmentToolsFileByID,
         getJssCurriculumdesignFileByID,
-        getGrade7ExaminationFileByID,
-        getGrade8ExaminationFileByID,
+        getGrade7ExaminationFileByID,        
         getJssfullSetExaminationFileByID,
-        getJssnotesFileByID,
+        getJssRevisionNotesFileByID,
         getJssHassignmentsFileByID,
-        getGrade8Examinations} from "../controllers/jss.js"
+        getGrade8Examinations,        
+        getJssAssessmentToolsByYear,
+        getJssAssessmentTools,
+        getGrade7ExaminationsByYear,
+        getJssHolidayAssignments,
+        getJSSRevisionNotesByYear,
+        deleteJSSRevisionNotes,
+        getJSSRevisionNotes,
+        getGrade8ExaminationsByYear,
+        getJssfullSetExaminationsByYear,
+        getJssHolidayAssignmentsByYear,
+        getJssCurriculumdesignByYear,
+        getGrade8ExaminationFileByID} from "../controllers/jss.js"
 import upload from "../middlewares/upload.js"
 import { protectedEndpoint } from "../controllers/auth.js"
+import { createResourceHandler } from "../controllers/resource.js"
+
 
 
 const jssRouter = express.Router()
 
-jssRouter.post("/create/schemes", upload.single("file"), createJssScheme) 
-jssRouter.post("/create/assessment/tools",upload.single("file"), createJuniorAssesmentTools)
-jssRouter.post("/create/curriculum/designs",upload.single("file"), createJssCurriculumdesign)
-jssRouter.post("/create/grade7/exams",upload.single("file"), createGrade7Examinations)
-jssRouter.post("/create/grade8/exams",upload.single("file"), createGrade8Examinations)
-jssRouter.post("/create/fullset/exams",upload.single("file"), createJssfullSetExaminations)
-jssRouter.post("/create/notes",upload.single("file"), createJssnotes)
-jssRouter.post("/create/holiday/assignments",upload.single("file"), createJssHassignments)
+jssRouter.post("/create/schemes", upload.single("file"), createResourceHandler) 
+jssRouter.post("/create/assessment/tools",upload.single("file"), createResourceHandler)
+jssRouter.post("/create/curriculum/designs",upload.single("file"), createResourceHandler)
+jssRouter.post("/create/grade7/examinations",upload.single("file"), createResourceHandler)
+jssRouter.post("/create/fullset/examinations",upload.single("file"), createResourceHandler)
+jssRouter.post("/create/revision/notes",upload.single("file"), createResourceHandler)
+jssRouter.post("/create/grade8/examinations",upload.single("file"), createResourceHandler)
+jssRouter.post("/create/fullset/exams",upload.single("file"), createResourceHandler)
+jssRouter.post("/create/holiday/assignment",upload.single("file"), createResourceHandler)
 
+jssRouter.post("/create/holiday/assignments",upload.single("file"), createResourceHandler)
+//GET ALL
 jssRouter.get   ("/schemes",  getJssSchemes) 
-jssRouter.get   ("/assessment/tools", getJuniorAssesmentTools)
+jssRouter.get   ("/assessment/tools", getJssAssessmentTools)
 jssRouter.get   ("/curriculum/designs", getJssCurriculumdesign)
-jssRouter.get   ("/grade7/exams", getGrade7Examinations)
-jssRouter.get   ("/grade8/exams", getGrade8Examinations)
-jssRouter.get   ("/fullset/exams", getJssfullSetExaminations)
-jssRouter.get   ("/notes", getJssnotes)
-jssRouter.get   ("/holiday/assignments", getJssHassignments)
+jssRouter.get   ("/grade7/examinations", getGrade7Examinations)
+jssRouter.get   ("/grade8/examinations", getGrade8Examinations)
+jssRouter.get   ("/fullset/examinations", getJssfullSetExaminations)
+jssRouter.get   ("/holiday/assignments", getJssHolidayAssignments)
+jssRouter.get   ("/revision/notes", getJSSRevisionNotes)
+//GET BY YEAR
+jssRouter.get   ("/assessment/tools/:year", getJssAssessmentToolsByYear)
+jssRouter.get   ("/grade7/examinations/:year", getGrade7ExaminationsByYear)
+jssRouter.get   ("/grade8/examinations/:year", getGrade8ExaminationsByYear)
+jssRouter.get   ("/revision/notes/:year", getJSSRevisionNotesByYear)
+jssRouter.get   ("/fullset/examinations/:year", getJssfullSetExaminationsByYear)
+jssRouter.get   ("/fullset/examinations/:year", getJssfullSetExaminationsByYear)
+jssRouter.get   ("/curriculum/designs/:year", getJssCurriculumdesignByYear)
+jssRouter.get   ("/holiday/assignments/:year", getJssHolidayAssignmentsByYear)
 
+//FILE
 jssRouter.get   ("/schemes/file/:id",protectedEndpoint, getJssSchemeFileByID)
-jssRouter.get   ("/assessment/tools/file/:id",protectedEndpoint, getJuniorAssesmentToolFileByID)
-jssRouter.get   ("/curriculum/designs/file/:id", protectedEndpoint, getJssCurriculumdesignFileByID)
-jssRouter.get   ("/grade7/exams/file/:id", protectedEndpoint, getGrade7ExaminationFileByID)
-jssRouter.get   ("/grade8/exams/file/:id", protectedEndpoint, getGrade8ExaminationFileByID)
-jssRouter.get   ("/fullset/exams/file/:id", protectedEndpoint,  getJssfullSetExaminationFileByID)
-jssRouter.get   ("/notes/file/:id", protectedEndpoint,  getJssnotesFileByID)
-jssRouter.get   ("/holiday/assignments/file/:id", protectedEndpoint, getJssHassignmentsFileByID)
+jssRouter.get   ("/assessment/tool/file/:id",protectedEndpoint, getJssAssesmentToolsFileByID)
+jssRouter.get   ("/curriculum/design/file/:id", protectedEndpoint, getJssCurriculumdesignFileByID)
+jssRouter.get   ("/grade7/examination/file/:id", protectedEndpoint, getGrade7ExaminationFileByID)
+jssRouter.get   ("/grade8/examination/file/:id", protectedEndpoint, getGrade8ExaminationFileByID)
+jssRouter.get   ("/fullset/examination/file/:id", protectedEndpoint,  getJssfullSetExaminationFileByID)
+jssRouter.get   ("/revision/note/file/:id", protectedEndpoint,  getJssRevisionNotesFileByID)
+jssRouter.get   ("/holiday/assignment/file/:id", protectedEndpoint, getJssHassignmentsFileByID)
 
-jssRouter.delete("/delete/schemes", deleteAllJssSchemes)
-jssRouter.delete ("/delete/assessment/tools", deleteAllJuniorAssesmentTools)
+jssRouter.delete("/delete/schemes", deleteJssSchemes)
+jssRouter.delete ("/delete/assessment/tools", deleteJssAssesmentTools)
 jssRouter.delete("/delete/curriculum/designs", deleteAllJssCurriculumdesigns)
-jssRouter.delete("/delete/grade7/exams", deleteAllGrade7Examinations)
-jssRouter.delete("/delete/grade8/exams",deleteAllGrade8Examinations)
+jssRouter.delete("/delete/grade7/exams", deleteGrade7Examinations)
+jssRouter.delete("/delete/grade8/exams",deleteGrade8Examinations)
 jssRouter.delete("/delete/fullset/exams", deleteAllJssfullSetExaminations)
-jssRouter.delete("/delete/notes", deleteAllJssnotes)
+jssRouter.delete("/revision/delete/notes", deleteJSSRevisionNotes)
 jssRouter.delete("/delete/holiday/assignments", deleteAllJssHassignments)
 
 jssRouter.delete("/delete/schemes/:id",deleteJssSchemeByID)
-jssRouter.delete ("/delete/assessment/tools/:id", deleteJuniorAssesmentToolByID)
+jssRouter.delete ("/delete/assessment/tools/:id", deleteJssAssesmentToolsByID)
 jssRouter.delete("/delete/curriculum/designs/:id", deleteJssCurriculumdesignByID)
 jssRouter.delete("/delete/grade7/exams/:id", deleteGrade7ExaminationByID)
 jssRouter.delete("/delete/grade8/exams/:id",deleteGrade8ExaminationByID)
 jssRouter.delete("/delete/fullset/exams/:id", deleteJssfullSetExaminationByID)
-jssRouter.delete("/delete/notes/:id", deleteJssnotesByID)
+jssRouter.delete("/revision/delete/notes/:id", deleteJssnotesByID)
 jssRouter.delete("/delete/holiday/assignments/:id", deleteJssHassignmentsByID)
 
 jssRouter.put("/update/schemes/:id",updateJssSchemeByID),
-jssRouter.put("/update/assessment/tools/:id", updateJuniorAssesmentToolByID)
+jssRouter.put("/update/assessment/tools/:id", updateJssAssesmentToolsByID)
 jssRouter.put("/update/curriculum/designs/:id",updateJssCurriculumdesignByID)
 jssRouter.put("/update/grade7/exams/:id", updateGrade7ExaminationByID)
 jssRouter.put("/update/grade8/exams/:id",updateGrade8ExaminationByID)
 jssRouter.put("/update/fullset/exams/:id", updateJssfullSetExaminationByID)
-jssRouter.put("/update/notes/:id", updateJssnotesByID)
+jssRouter.put("/update/revision/notes/:id", updateJssnotesByID)
 jssRouter.put("/update/holiday/assignments/:id", updateJssHassignmentsByID)
 
 
